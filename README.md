@@ -38,6 +38,7 @@ Alternately, there's `bin/flip` to use from commandline:
 
 Or
 `bundle exec bin/flip pony_feature=true pony_powerup='hot cocoa'`
+
 If it's in your gems rather than bundle gemset
 `flip pony_feature=1`
 
