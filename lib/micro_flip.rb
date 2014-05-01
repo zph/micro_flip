@@ -38,6 +38,14 @@ module MicroFlip
     def destroy
       File.rm_f filename
     end
+
+    def method_missing(method, *args)
+      if db.respond_to?(method)
+        db.send(method, *args)
+      else
+        super
+      end
+    end
   end
 
   module CLI
