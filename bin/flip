@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+
+require 'micro_flip'
+
+# Create a simple file store
+
+db = MicroFlip::DB.new
+
+cli = MicroFlip::CLI
+
+hash = cli.parse_args(ARGV)
+
+db.set(hash)
+
+cli.display_changes(hash)
