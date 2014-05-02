@@ -38,6 +38,7 @@ module MicroFlip
       compare_values(key, values)
     end
     alias_method :t?, :is_true?
+    alias_method :is?, :is_true?
 
     def is_false?(key)
       values = [false , 'false' , 'f' , 0 , '0' , '' , nil]
@@ -82,13 +83,23 @@ module MicroFlip
       args = argv.dup
       #TODO handle case where we get default= and set the 2nd bit to empty string
       #TODO maybe use optparser for this?
-      hashes = args.flat_map { |a| Hash[*a.split('=') ] }
+      hashes = args.flat_map do |a|
+        arr = a.split('=')
+        if arr.length == 1
+          array = [arr.first, '']
+        else
+          array = arr
+        end
+        Hash[*array]
+      end
+
       hashes.reduce(&:merge)
     end
 
     def self.display_changes(hash, io = STDOUT)
       hash.each do |key, value|
-        io.puts "Flip: #{key} set to #{value}"
+        value = "empty string" if value == ''
+        io.puts "Flip: #{key} set to >> #{value} <<"
       end
     end
   end
