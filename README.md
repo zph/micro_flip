@@ -25,7 +25,7 @@ require 'micro_flip'
 MicroFlip.setup
 
 # Inside code where you want the flipping
-puts "Ponies" if $flip.true?('pony_feature')
+puts "Ponies" if $flip.is_true?('pony_feature')
 ```
 
 ```
