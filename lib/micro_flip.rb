@@ -4,20 +4,22 @@ require 'moneta'
 require 'sqlite3'
 
 module MicroFlip
-  def self.setup(filename = '.micro_flip.db')
+
+  DEFAULT_FILENAME = '.micro_flip.db'
+  def self.setup(filename = DEFAULT_FILENAME)
     DB.create(filename)
   end
 
   class DB
     attr_accessor :db, :filename
-    def initialize(filename = '.micro_flip.db')
+    def initialize(filename = DEFAULT_FILENAME)
       @filename = filename
       @db = Moneta.build do
         adapter :Sqlite, file: filename
       end
     end
 
-    def self.create(filename = '.micro_flip.db')
+    def self.create(filename = DEFAULT_FILENAME)
       $flip = new(filename)
     end
 
@@ -27,13 +29,31 @@ module MicroFlip
       end
     end
 
-    def true?(key)
-      db[key] == true || 'true' || 't' || 1 || '1'
+    def get(k)
+      db[k]
     end
 
-    def false?(key)
-      db[key] == false || 'false' || 'f' || 0 || '0'
+    def is_true?(key)
+      values = [true , 'true' , 't' , 1 , '1']
+      compare_values(key, values)
     end
+    alias_method :t?, :is_true?
+
+    def is_false?(key)
+      values = [false , 'false' , 'f' , 0 , '0' , '' , nil]
+      compare_values(key, values)
+    end
+    alias_method :f?, :is_false?
+
+    def do_if(key, fn)
+      fn.call if is_true?(key)
+    end
+    alias_method :do_if?, :do_if
+
+    def do_unless(key, fn)
+      fn.call unless is_true?(key)
+    end
+    alias_method :do_unless?, :do_unless
 
     def destroy
       File.rm_f filename
@@ -45,6 +65,15 @@ module MicroFlip
       else
         super
       end
+    end
+
+    private
+
+    def compare_values(key, set)
+      r = set.map do |v|
+        db[key] == v
+      end.compact
+      !r.reject {|i| i == false }.empty?
     end
   end
 
