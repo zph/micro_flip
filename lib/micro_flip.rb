@@ -2,25 +2,31 @@
 
 require 'moneta'
 require 'sqlite3'
+require 'fileutils'
 
 module MicroFlip
 
   DEFAULT_FILENAME = '.micro_flip.db'
-  def self.setup(filename = DEFAULT_FILENAME)
-    DB.create(filename)
+  def self.setup(filename = DEFAULT_FILENAME, &block)
+    DB.create(filename, &block)
   end
 
   class DB
     attr_accessor :db, :filename
-    def initialize(filename = DEFAULT_FILENAME)
+    def initialize(filename = DEFAULT_FILENAME, &block)
       @filename = filename
       @db = Moneta.build do
         adapter :Sqlite, file: filename
       end
+
+      if block_given?
+        yield(self)
+        destroy
+      end
     end
 
-    def self.create(filename = DEFAULT_FILENAME)
-      $flip = new(filename)
+    def self.create(filename = DEFAULT_FILENAME, &block)
+      $flip = new(filename, &block)
     end
 
     def set(hash)
@@ -57,7 +63,7 @@ module MicroFlip
     alias_method :do_unless?, :do_unless
 
     def destroy
-      File.rm_f filename
+      FileUtils.rm_f filename
     end
 
     def method_missing(method, *args)
