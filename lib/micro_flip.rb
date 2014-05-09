@@ -30,7 +30,7 @@ module MicroFlip
     end
 
     def set(hash)
-      hash.each do |k,v|
+      Hash(hash).each do |k,v|
         db[k] = v
       end
     end
@@ -103,10 +103,11 @@ module MicroFlip
     end
 
     def self.display_changes(hash, io = STDOUT)
-      hash.each do |key, value|
+      Hash(hash).each do |key, value|
         value = "empty string" if value == ''
         io.puts "Flip: #{key} set to >> #{value} <<"
       end
+      exit(1) if Hash(hash).empty?
     end
   end
 end
