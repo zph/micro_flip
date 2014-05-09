@@ -8,8 +8,14 @@ db = MicroFlip::DB.new
 
 cli = MicroFlip::CLI
 
-hash = cli.parse_args(ARGV)
 
-db.set(hash)
+options = MicroFlip::CLI::Optparser.parse(ARGV)
 
-cli.display_changes(hash)
+if options.show_flips
+  cli.show_lib_flips
+  cli.show_bin_flips
+else
+  hash = cli.parse_args(ARGV)
+  db.set(hash)
+  cli.display_changes(hash)
+end

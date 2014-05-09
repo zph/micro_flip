@@ -3,6 +3,9 @@
 require 'moneta'
 require 'sqlite3'
 require 'fileutils'
+require 'optparse'
+require 'ostruct'
+require_relative 'micro_flip/cli'
 
 module MicroFlip
 
@@ -84,30 +87,4 @@ module MicroFlip
     end
   end
 
-  module CLI
-    def self.parse_args(argv)
-      args = argv.dup
-      #TODO handle case where we get default= and set the 2nd bit to empty string
-      #TODO maybe use optparser for this?
-      hashes = args.flat_map do |a|
-        arr = a.split('=')
-        if arr.length == 1
-          array = [arr.first, '']
-        else
-          array = arr
-        end
-        Hash[*array]
-      end
-
-      hashes.reduce(&:merge)
-    end
-
-    def self.display_changes(hash, io = STDOUT)
-      Hash(hash).each do |key, value|
-        value = "empty string" if value == ''
-        io.puts "Flip: #{key} set to >> #{value} <<"
-      end
-      exit(1) if Hash(hash).empty?
-    end
-  end
 end
